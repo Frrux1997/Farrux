@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Logo AI Studio | Animated Pro Panel</title>
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--tg-theme-bg-color, #0a0f1a);
+            color: var(--tg-theme-text-color, #f1f5f9);
+            transition: background 0.3s ease, color 0.2s;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+        body.light {
+            background: #eef2ff;
+            color: #1e293b;
+        }
+        /* Animated gradient background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: radial-gradient(circle at 20% 30%, rgba(59,130,246,0.15), rgba(139,92,246,0.08), transparent 70%),
+                        radial-gradient(circle at 80% 70%, rgba(139,92,246,0.12), rgba(59,130,246,0.05), transparent 70%);
+            animation: bgFloat 16s ease-in-out infinite alternate;
+        }
+        @keyframes bgFloat {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.6; }
+            100% { transform: scale(1.05) rotate(1deg); opacity: 1; }
+        }
+        /* Floating particles */
+        .particle {
+            position: fixed;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            animation: floatParticle 12s infinite ease-in-out;
+        }
+        @keyframes floatParticle {
+            0% { transform: translateY(0px) rotate(0deg); opacity: 0.2; }
+            50% { transform: translateY(-60px) rotate(180deg); opacity: 0.6; }
+            100% { transform: translateY(0px) rotate(360deg); opacity: 0.2; }
+        }
+        body.light .particle { background: rgba(59,130,246,0.15); }
+        /* Glass morphism */
+        .glass {
+            background: rgba(15, 25, 45, 0.65);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 32px;
+            transition: all 0.25s cubic-bezier(0.2,0.9,0.4,1.1);
+        }
+        body.light .glass {
+            background: rgba(255,255,255,0.7);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .glass:hover { transform: translateY(-2px); border-color: rgba(59,130,246,0.4); }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 60px;
+            padding: 12px 20px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            color: white;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 12px rgba(59,130,246,0.2);
+        }
+        .btn-primary:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(59,130,246,0.4); }
+        .chip {
+            background: rgba(255,255,255,0.08);
+            border-radius: 40px;
+            padding: 6px 16px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .chip.active {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            transform: scale(1.02);
+        }
+        .tab-btn {
+            transition: all 0.2s cubic-bezier(0.2,0.9,0.4,1.1);
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+            transform: translateY(-2px);
+        }
+        .preview-box {
+            background: rgba(0,0,0,0.2);
+            border-radius: 28px;
+            aspect-ratio: 1/1;
+            max-width: 160px;
+            margin: 0 auto;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        .preview-box:hover { transform: scale(1.02); }
+        .spinner { border: 3px solid rgba(255,255,255,0.2); border-top-color: #3b82f6; border-radius: 50%; width: 32px; height: 32px; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+        .fade-in { animation: fadeSlide 0.35s ease forwards; }
+        @keyframes fadeSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .service-card { transition: all 0.2s; }
+        .service-card:active { transform: scale(0.96); background: rgba(59,130,246,0.2); }
+        .logo-badge {
+            background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2));
+            border-radius: 32px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.2s;
+        }
+        .logo-badge:hover { transform: scale(1.01); background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(139,92,246,0.25)); }
+        .animate-pulse-slow { animation: pulseGlow 2.5s infinite; }
+        @keyframes pulseGlow { 0%,100% { opacity: 0.8; text-shadow: 0 0 2px rgba(59,130,246,0.5); } 50% { opacity: 1; text-shadow: 0 0 8px rgba(59,130,246,0.8); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        .loading-shimmer {
+            background: linear-gradient(90deg, rgba(59,130,246,0.1), rgba(139,92,246,0.3), rgba(59,130,246,0.1));
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    <div class="max-w-lg mx-auto px-4 pt-5 relative z-10 fade-in">
+        <!-- Brand Logo Header with subtle animation -->
+        <div class="logo-badge glass">
+            <h1 class="text-3xl font-extrabold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent animate-pulse-slow">LOGO AI STUDIO</h1>
+            <p class="text-xs text-blue-300/80 mt-1 tracking-wide">INTELLIGENT DESIGN SOLUTION</p>
+            <p class="text-[10px] text-white/40 mt-2">Professional Branding Packages for Freelancers and Businesses</p>
+        </div>
+
+        <!-- Top bar with animated streak -->
+        <div class="flex justify-between items-center mb-5">
+            <div class="text-sm font-medium opacity-70">✨ AI Studio</div>
+            <div class="flex gap-2">
+                <button id="themeToggle" class="bg-white/10 backdrop-blur px-3 py-1.5 rounded-full text-sm transition-transform active:scale-95">🌓</button>
+                <div id="streakBadge" class="bg-white/10 backdrop-blur px-3 py-1.5 rounded-full text-sm flex items-center gap-1 animate-pulse-slow">🔥 0</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex gap-2 overflow-x-auto pb-2 mb-6 no-scrollbar">
+            <button data-tab="wizard" class="tab-btn px-5 py-2 rounded-full text-sm font-medium" data-i18n="tab_wizard">🎨 Logo Yaratish</button>
+            <button data-tab="chat" class="tab-btn px-5 py-2 rounded-full text-sm font-medium" data-i18n="tab_chat">💬 AI Suhbat</button>
+            <button data-tab="services" class="tab-btn px-5 py-2 rounded-full text-sm font-medium" data-i18n="tab_services">✨ Xizmatlar</button>
+            <button data-tab="projects" class="tab-btn px-5 py-2 rounded-full text-sm font-medium" data-i18n="tab_projects">📂 Loyihalar</button>
+            <button data-tab="profile" class="tab-btn px-5 py-2 rounded-full text-sm font-medium" data-i18n="tab_profile">👤 Profil</button>
+            <button data-tab="stats" class="tab-btn px-5 py-2 rounded-full text-sm font-medium" data-i18n="tab_stats">📊 Statistika</button>
+        </div>
+
+        <!-- ==================== WIZARD ==================== -->
+        <div id="tab-wizard" class="tab-content glass p-5 space-y-5">
+            <div class="text-center">
+                <div class="text-3xl">🎨</div>
+                <h2 class="text-xl font-bold" data-i18n="wizard_title">Oddiy usulda logo yaratish</h2>
+                <p class="text-xs opacity-60" data-i18n="wizard_subtitle">Brend nomi, soha, uslub va ranglar</p>
+            </div>
+            <div class="preview-box mx-auto"><canvas id="previewCanvas" width="150" height="150" class="preview-canvas"></canvas></div>
+            <div><label class="text-sm font-medium" data-i18n="brand_label">🏢 Brend nomi</label><input type="text" id="brandName" class="w-full mt-1 bg-white/10 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition" placeholder="Masalan: NovaTech"></div>
+            <div><label class="text-sm font-medium" data-i18n="industry_label">💼 Soha</label><div id="industryChips" class="flex flex-wrap gap-2 mt-2"></div><input type="text" id="customIndustry" class="w-full mt-2 bg-white/10 border border-white/10 rounded-2xl px-4 py-2 text-sm" data-i18n-placeholder="industry_placeholder" placeholder="Yoki o'zingiz yozing"></div>
+            <div><label class="text-sm font-medium" data-i18n="style_label">🎨 Uslub</label><div id="styleChips" class="flex flex-wrap gap-2 mt-2"></div></div>
+            <div><label class="text-sm font-medium" data-i18n="colors_label">🌈 Ranglar (20+ variant)</label><div id="colorChips" class="flex flex-wrap gap-2 mt-2"></div><input type="text" id="customColors" class="w-full mt-2 bg-white/10 border border-white/10 rounded-2xl px-4 py-2 text-sm" data-i18n-placeholder="colors_placeholder" placeholder="Masalan: navy, gold"></div>
+            <div><label class="text-sm font-medium" data-i18n="trending_label">🔥 Mashhur kombinatsiyalar</label><div id="trendingList" class="flex flex-wrap gap-2 mt-2"></div></div>
+            <div id="aiRecommend" class="text-xs bg-blue-500/10 p-3 rounded-2xl" data-i18n="ai_recommend_default">💡 AI tavsiya: Soha va uslubni tanlang, men eng yaxshi variantni taklif qilaman.</div>
+            <button id="generateBtn" class="w-full btn-primary py-3 rounded-2xl" data-i18n="generate_btn">✨ Logoni yaratish (3 variant + 4K)</button>
+        </div>
+
+        <!-- ==================== AI CHAT ==================== -->
+        <div id="tab-chat" class="tab-content glass p-5 space-y-4 hidden">
+            <div class="flex justify-between items-center"><h3 class="font-bold text-lg" data-i18n="chat_title">🤖 AI dizayn yordamchisi</h3><button id="voiceBtn" class="bg-white/10 px-3 py-1 rounded-full text-sm active:scale-95 transition">🎤 Ovoz</button></div>
+            <div id="chatBox" class="h-80 overflow-y-auto space-y-3 pr-1"></div>
+            <div class="flex gap-2"><input type="text" id="chatInput" class="flex-1 bg-white/10 border border-white/10 rounded-2xl px-4 py-2 text-sm" data-i18n-placeholder="chat_placeholder" placeholder="Masalan: IT kompaniya, minimalist, ko'k"><button id="chatSend" class="bg-blue-600 px-4 rounded-2xl active:scale-95 transition">➤</button></div>
+            <div class="flex flex-wrap gap-1 justify-center"><button class="suggest-chip text-xs bg-white/10 px-3 py-1 rounded-full" data-msg="IT startap, minimalist, ko'k va oq">💻 IT + Minimal</button><button class="suggest-chip text-xs bg-white/10 px-3 py-1 rounded-full" data-msg="Kafe, organik, yashil ranglar">🍃 Organic Cafe</button><button class="suggest-chip text-xs bg-white/10 px-3 py-1 rounded-full" data-msg="Sport brendi, energik, qizil va qora">⚡ Sport & Bold</button></div>
+        </div>
+
+        <!-- ==================== SERVICES ==================== -->
+        <div id="tab-services" class="tab-content glass p-5 space-y-5 hidden">
+            <h3 class="font-bold text-lg" data-i18n="services_title">✨ Qo‘shimcha xizmatlar</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <button class="service-card bg-white/10 p-3 rounded-2xl text-center active:scale-95 transition" data-svc="brandkit">📦 To‘liq Brand Kit<br><span class="text-xs">Vizitka+Blanka+Imzo+SVG</span></button>
+                <button class="service-card bg-white/10 p-3 rounded-2xl text-center" data-svc="social">📱 Social Kit<br><span class="text-xs">Instagram+Twitter</span></button>
+                <button class="service-card bg-white/10 p-3 rounded-2xl text-center" data-svc="mockup">👕 Mockup<br><span class="text-xs">T-shirt preview</span></button>
+                <button class="service-card bg-white/10 p-3 rounded-2xl text-center" data-svc="transparent">🔲 Shaffof PNG</button>
+                <button class="service-card bg-white/10 p-3 rounded-2xl text-center" data-svc="svg">🎨 SVG vektor</button>
+                <button class="service-card bg-white/10 p-3 rounded-2xl text-center" data-svc="upscale">⬆️ 4K Upscale</button>
+            </div>
+            <p class="text-xs text-center opacity-60" data-i18n="services_note">* Xizmatlar avval yaratilgan logo uchun ishlaydi. Premium – bepul, free – 1 kredit.</p>
+        </div>
+
+        <!-- ==================== PROJECTS ==================== -->
+        <div id="tab-projects" class="tab-content glass p-5 space-y-4 hidden">
+            <h3 class="font-bold text-lg" data-i18n="projects_title">📂 Mening loyihalarim</h3>
+            <div id="projectsContainer" class="space-y-3 max-h-80 overflow-y-auto"></div>
+            <div id="compareArea" class="hidden"><h4 class="font-semibold text-sm" data-i18n="compare_title">🔄 Variantlarni solishtirish</h4><div id="compareImages" class="flex gap-2 mt-2 overflow-x-auto"></div></div>
+            <button id="refreshProjectsBtn" class="w-full bg-white/10 py-2 rounded-xl text-sm active:scale-95 transition" data-i18n="refresh_btn">🔄 Yangilash</button>
+        </div>
+
+        <!-- ==================== PROFILE + LANGUAGE ==================== -->
+        <div id="tab-profile" class="tab-content glass p-5 space-y-5 hidden">
+            <div class="flex justify-between items-center"><h3 class="font-bold text-lg" data-i18n="profile_title">👤 Profil</h3><span id="userStatusBadge" class="text-xs bg-green-500/20 px-2 py-1 rounded-full" data-i18n="free_badge">Free</span></div>
+            <div><span data-i18n="credits_label">💳 Kreditlar:</span> <span id="creditsCount">5</span></div>
+            <div><span data-i18n="badges_label">🏅 Badge:</span> <span id="badgeList">🎉 Beginner</span></div>
+            <div><span data-i18n="total_logos_label">🎨 Jami logolar:</span> <span id="totalLogos">0</span></div>
+            <div><span data-i18n="referrals_label">🤝 Referallar:</span> <span id="referralCount">0</span></div>
+            <div><span data-i18n="streak_label">🔥 Streak:</span> <span id="streakCount">0</span> <span data-i18n="days">kun</span></div>
+            <div class="pt-2"><label class="text-sm font-medium" data-i18n="language_label">🌐 Til / Language</label><select id="languageSelect" class="w-full mt-1 bg-white/10 border border-white/10 rounded-2xl px-4 py-2 text-sm"><option value="uz">🇺🇿 O'zbek</option><option value="en">🇬🇧 English</option><option value="ru">🇷🇺 Русский</option></select></div>
+            <button id="copyReferral" class="w-full bg-white/10 py-2 rounded-xl text-sm active:scale-95 transition" data-i18n="copy_referral">🔗 Referal havolani nusxalash</button>
+            <button id="premiumButton" class="w-full btn-primary py-3 rounded-2xl" data-i18n="premium_btn">💎 Premium sotib olish</button>
+        </div>
+
+        <!-- ==================== STATS ==================== -->
+        <div id="tab-stats" class="tab-content glass p-5 space-y-5 hidden">
+            <h3 class="font-bold text-lg" data-i18n="stats_title">📊 Mening statistikam</h3>
+            <canvas id="weeklyChart" width="300" height="150" style="max-width:100%; height:auto;"></canvas>
+            <canvas id="styleChart" width="300" height="150" style="max-width:100%; height:auto;"></canvas>
+            <p class="text-xs text-center opacity-60" data-i18n="stats_note">So'nggi 7 kunlik logolar | Eng ko'p ishlatilgan uslublar</p>
+        </div>
+    </div>
+
+    <!-- Loading overlay with shimmer animation -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 hidden flex-col">
+        <div class="glass p-8 text-center space-y-4 w-64">
+            <div class="spinner mx-auto"></div>
+            <p class="font-semibold" data-i18n="loading">AI generatsiya qilmoqda...</p>
+            <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                <div id="progressFill" class="bg-gradient-to-r from-blue-500 to-purple-500 h-full w-0 transition-all duration-200 loading-shimmer"></div>
+            </div>
+            <p id="progressPercent" class="text-xs">0%</p>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+        tg.MainButton.hide();
+
+        // ---------- Floating particles ----------
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            const size = Math.random() * 30 + 10;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.left = Math.random() * window.innerWidth + 'px';
+            particle.style.top = Math.random() * window.innerHeight + 'px';
+            particle.style.animationDelay = Math.random() * 10 + 's';
+            particle.style.animationDuration = Math.random() * 15 + 10 + 's';
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 15000);
+        }
+        for (let i = 0; i < 20; i++) setTimeout(createParticle, i * 300);
+        setInterval(() => createParticle(), 4000);
+
+        // ---------- TRANSLATIONS ----------
+        const translations = {
+            uz: {
+                tab_wizard: "🎨 Logo Yaratish", tab_chat: "💬 AI Suhbat", tab_services: "✨ Xizmatlar", tab_projects: "📂 Loyihalar", tab_profile: "👤 Profil", tab_stats: "📊 Statistika",
+                wizard_title: "Oddiy usulda logo yaratish", wizard_subtitle: "Brend nomi, soha, uslub va ranglar",
+                brand_label: "🏢 Brend nomi", industry_label: "💼 Soha", style_label: "🎨 Uslub", colors_label: "🌈 Ranglar (20+ variant)",
+                industry_placeholder: "Yoki o'zingiz yozing", colors_placeholder: "Masalan: navy, gold",
+                trending_label: "🔥 Mashhur kombinatsiyalar", generate_btn: "✨ Logoni yaratish (3 variant + 4K)",
+                ai_recommend_default: "💡 AI tavsiya: Soha va uslubni tanlang, men eng yaxshi variantni taklif qilaman.",
+                chat_title: "🤖 AI dizayn yordamchisi", voice_btn: "🎤 Ovoz", chat_placeholder: "Masalan: IT kompaniya, minimalist, ko'k",
+                services_title: "✨ Qo‘shimcha xizmatlar", services_note: "* Xizmatlar avval yaratilgan logo uchun ishlaydi. Premium – bepul, free – 1 kredit.",
+                projects_title: "📂 Mening loyihalarim", compare_title: "🔄 Variantlarni solishtirish", refresh_btn: "🔄 Yangilash",
+                profile_title: "👤 Profil", free_badge: "Free", premium_badge: "Premium",
+                credits_label: "💳 Kreditlar:", badges_label: "🏅 Badge:", total_logos_label: "🎨 Jami logolar:", referrals_label: "🤝 Referallar:", streak_label: "🔥 Streak:", days: "kun",
+                language_label: "🌐 Til / Language", copy_referral: "🔗 Referal havolani nusxalash", premium_btn: "💎 Premium sotib olish",
+                stats_title: "📊 Mening statistikam", stats_note: "So'nggi 7 kunlik logolar | Eng ko'p ishlatilgan uslublar",
+                loading: "AI generatsiya qilmoqda..."
+            },
+            en: {
+                tab_wizard: "🎨 Create Logo", tab_chat: "💬 AI Chat", tab_services: "✨ Services", tab_projects: "📂 Projects", tab_profile: "👤 Profile", tab_stats: "📊 Stats",
+                wizard_title: "Simple logo creation", wizard_subtitle: "Brand name, industry, style & colors",
+                brand_label: "🏢 Brand name", industry_label: "💼 Industry", style_label: "🎨 Style", colors_label: "🌈 Colors (20+ options)",
+                industry_placeholder: "Or type yourself", colors_placeholder: "e.g. navy, gold",
+                trending_label: "🔥 Trending combos", generate_btn: "✨ Generate logo (3 variants + 4K)",
+                ai_recommend_default: "💡 AI tip: Choose industry & style, I will suggest the best match.",
+                chat_title: "🤖 AI design assistant", voice_btn: "🎤 Voice", chat_placeholder: "e.g. IT company, minimalist, blue",
+                services_title: "✨ Extra services", services_note: "* Services work for previously created logo. Premium – free, free – 1 credit.",
+                projects_title: "📂 My projects", compare_title: "🔄 Compare variants", refresh_btn: "🔄 Refresh",
+                profile_title: "👤 Profile", free_badge: "Free", premium_badge: "Premium",
+                credits_label: "💳 Credits:", badges_label: "🏅 Badge:", total_logos_label: "🎨 Total logos:", referrals_label: "🤝 Referrals:", streak_label: "🔥 Streak:", days: "days",
+                language_label: "🌐 Language", copy_referral: "🔗 Copy referral link", premium_btn: "💎 Buy Premium",
+                stats_title: "📊 My stats", stats_note: "Last 7 days logos | Most used styles",
+                loading: "AI generating..."
+            },
+            ru: {
+                tab_wizard: "🎨 Создать лого", tab_chat: "💬 AI Чат", tab_services: "✨ Услуги", tab_projects: "📂 Проекты", tab_profile: "👤 Профиль", tab_stats: "📊 Статистика",
+                wizard_title: "Простое создание лого", wizard_subtitle: "Название бренда, сфера, стиль, цвета",
+                brand_label: "🏢 Название бренда", industry_label: "💼 Сфера", style_label: "🎨 Стиль", colors_label: "🌈 Цвета (20+ вариантов)",
+                industry_placeholder: "Или напишите сами", colors_placeholder: "Напр. синий, золотой",
+                trending_label: "🔥 Популярные комбо", generate_btn: "✨ Создать лого (3 варианта + 4K)",
+                ai_recommend_default: "💡 Совет AI: выберите сферу и стиль, я предложу лучшее сочетание.",
+                chat_title: "🤖 AI помощник", voice_btn: "🎤 Голос", chat_placeholder: "Напр. IT компания, минимализм, синий",
+                services_title: "✨ Доп. услуги", services_note: "* Услуги работают для ранее созданного лого. Premium – бесплатно, free – 1 кредит.",
+                projects_title: "📂 Мои проекты", compare_title: "🔄 Сравнить варианты", refresh_btn: "🔄 Обновить",
+                profile_title: "👤 Профиль", free_badge: "Бесплатно", premium_badge: "Премиум",
+                credits_label: "💳 Кредиты:", badges_label: "🏅 Значки:", total_logos_label: "🎨 Всего лого:", referrals_label: "🤝 Рефералы:", streak_label: "🔥 Серия:", days: "дней",
+                language_label: "🌐 Язык", copy_referral: "🔗 Скопировать реферальную ссылку", premium_btn: "💎 Купить Premium",
+                stats_title: "📊 Моя статистика", stats_note: "Последние 7 дней | Частые стили",
+                loading: "AI генерирует..."
+            }
+        };
+
+        let currentLang = localStorage.getItem('language') || 'uz';
+        function applyLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('language', lang);
+            document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (translations[lang][key]) el.innerText = translations[lang][key]; });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { const key = el.getAttribute('data-i18n-placeholder'); if (translations[lang][key]) el.placeholder = translations[lang][key]; });
+            const statusBadge = document.getElementById('userStatusBadge');
+            if (statusBadge) statusBadge.innerText = translations[lang].free_badge;
+        }
+        const langSelect = document.getElementById('languageSelect');
+        if (langSelect) { langSelect.value = currentLang; langSelect.addEventListener('change', (e) => applyLanguage(e.target.value)); }
+        applyLanguage(currentLang);
+
+        // Streak & Daily Bonus
+        function updateStreak() {
+            const today = new Date().toDateString();
+            let last = localStorage.getItem('lastActive');
+            let streak = parseInt(localStorage.getItem('streakCount') || '0');
+            if (last !== today) {
+                if (last) { const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1); streak = (last === yesterday.toDateString()) ? streak+1 : 1; }
+                else streak = 1;
+                localStorage.setItem('streakCount', streak);
+                localStorage.setItem('lastActive', today);
+                if (streak % 3 === 0) tg.showPopup({title:"🔥 Kunlik bonus!", message:`${streak} kunlik streak uchun +2 kredit qo'shildi`, buttons:[{type:"ok"}]});
+            }
+            document.getElementById('streakCount').innerText = streak;
+            document.getElementById('streakBadge').innerHTML = `🔥 ${streak}`;
+        }
+        updateStreak();
+
+        // Theme
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => { document.body.classList.toggle('light'); localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark'); });
+        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light');
+
+        // Wizard data
+        let selectedIndustry = '', selectedStyle = '', selectedColors = 'blue, white';
+        const industries = ["💻 IT & Tech","🍕 Food & Cafe","💪 Fitness","🛍 Retail","📚 Education","💰 Finance","🎮 Gaming","⚕️ Medical","🏗 Construction","✈️ Travel"];
+        const industryMap = { "💻 IT & Tech":"IT & Technology","🍕 Food & Cafe":"Food & Beverage","💪 Fitness":"Health & Fitness","🛍 Retail":"Retail & Fashion","📚 Education":"Education","💰 Finance":"Finance & Banking","🎮 Gaming":"Gaming & Entertainment","⚕️ Medical":"Healthcare","🏗 Construction":"Construction","✈️ Travel":"Travel & Tourism" };
+        const styles = ["⬛ Minimalist","🌈 Colorful","🏛 Corporate","🎨 Creative","🌿 Organic","⚡ Bold","🔮 Futuristic","📜 Vintage"];
+        const styleMap = { "⬛ Minimalist":"Modern Minimalist","🌈 Colorful":"Colorful & Vibrant","🏛 Corporate":"Corporate Professional","🎨 Creative":"Creative Artistic","🌿 Organic":"Organic Natural","⚡ Bold":"Bold & Dynamic","🔮 Futuristic":"Futuristic Tech","📜 Vintage":"Vintage Classic" };
+        const colorPresets = ["🔵 Ko'k & Oq","🔴 Qizil & Qora","🟢 Yashil & Oq","🟣 Binafsha & Oq","🟠 To'q sariq & Oq","⬛ Qora & Kumush","💛 Oltin & Qora","💖 Pushti & Oq","🤎 Jigarrang & Krem","🩵 Firuza & Oq","💚 Zumrad & Oltin","💜 Lavanda & Oq","🧡 Marjon & Oq","🤍 Oq & Kulrang","🖤 Qora & Oq","🔵 Gradient ko'k","🟣 Gradient binafsha","🌈 Rainbow","🌊 Dengiz to'lqini","🌿 Yashil & Jigarrang"];
+        const colorMap = { "🔵 Ko'k & Oq":"blue, white","🔴 Qizil & Qora":"red, black","🟢 Yashil & Oq":"green, white","🟣 Binafsha & Oq":"purple, white","🟠 To'q sariq & Oq":"orange, white","⬛ Qora & Kumush":"black, silver","💛 Oltin & Qora":"gold, black","💖 Pushti & Oq":"pink, white","🤎 Jigarrang & Krem":"brown, beige","🩵 Firuza & Oq":"teal, white","💚 Zumrad & Oltin":"emerald, gold","💜 Lavanda & Oq":"lavender, white","🧡 Marjon & Oq":"coral, white","🤍 Oq & Kulrang":"white, gray","🖤 Qora & Oq":"black, white","🔵 Gradient ko'k":"blue gradient","🟣 Gradient binafsha":"purple gradient","🌈 Rainbow":"rainbow","🌊 Dengiz to'lqini":"navy, teal","🌿 Yashil & Jigarrang":"green, brown" };
+        function renderChips(containerId, items, onClick) { const container = document.getElementById(containerId); if(!container) return; container.innerHTML=''; items.forEach(item=>{ const chip=document.createElement('div'); chip.className='chip'; chip.innerText=item; chip.onclick=()=>{ document.querySelectorAll(`#${containerId} .chip`).forEach(c=>c.classList.remove('active')); chip.classList.add('active'); onClick(item); }; container.appendChild(chip); }); }
+        renderChips('industryChips', industries, (val)=>{ selectedIndustry=industryMap[val]; document.getElementById('customIndustry').value=''; updateRecommendation(); updatePreview(); });
+        renderChips('styleChips', styles, (val)=>{ selectedStyle=styleMap[val]; updateRecommendation(); updatePreview(); });
+        renderChips('colorChips', colorPresets, (val)=>{ selectedColors=colorMap[val]; document.getElementById('customColors').value=''; updatePreview(); updateRecommendation(); });
+        const trending = [ { label:"💻 IT + Futuristic + ko'k", industry:"IT & Technology", style:"Futuristic Tech", colors:"blue, white" },{ label:"🍕 Cafe + Organic + yashil", industry:"Food & Beverage", style:"Organic Natural", colors:"green, white" },{ label:"⚡ Sport + Bold + qizil", industry:"Health & Fitness", style:"Bold & Dynamic", colors:"red, black" },{ label:"🏦 Bank + Corporate + ko'k", industry:"Finance & Banking", style:"Corporate Professional", colors:"navy, white" },{ label:"🎮 Gaming + Futuristic + binafsha", industry:"Gaming & Entertainment", style:"Futuristic Tech", colors:"purple, black" },{ label:"💎 Luxury + Oltin & qora", industry:"Retail & Fashion", style:"Vintage Classic", colors:"gold, black" } ];
+        const trendingDiv=document.getElementById('trendingList');
+        if(trendingDiv){ trending.forEach(t=>{ const btn=document.createElement('button'); btn.className='chip text-xs'; btn.innerText=t.label; btn.onclick=()=>{ selectedIndustry=t.industry; selectedStyle=t.style; selectedColors=t.colors; document.querySelectorAll('#industryChips .chip, #styleChips .chip, #colorChips .chip').forEach(c=>c.classList.remove('active')); updateRecommendation(); updatePreview(); }; trendingDiv.appendChild(btn); }); }
+        const previewCanvas=document.getElementById('previewCanvas'); const ctx=previewCanvas?.getContext('2d');
+        function updatePreview(){ if(!ctx) return; const brand=document.getElementById('brandName').value.trim()||"LOGO"; const color=selectedColors.split(',')[0]||"#3b82f6"; const grad=ctx.createLinearGradient(0,0,150,150); grad.addColorStop(0,'#1e1b4b'); grad.addColorStop(1,'#312e81'); ctx.fillStyle=grad; ctx.fillRect(0,0,150,150); ctx.font="bold 14px 'Inter'"; ctx.fillStyle='#ffffff'; ctx.fillText(brand.substring(0,12),20,85); ctx.fillStyle=color; ctx.fillRect(20,95,Math.min(brand.length*6,100),3); ctx.fillStyle='#c4b5fd'; ctx.font="italic 8px 'Inter'"; ctx.fillText("AI studio",25,120); }
+        document.getElementById('brandName')?.addEventListener('input',updatePreview);
+        function updateRecommendation(){ const recDiv=document.getElementById('aiRecommend'); if(!recDiv) return; if(selectedIndustry&&selectedStyle) recDiv.innerHTML=`💡 AI tavsiya: ${selectedIndustry} sohasi uchun ${selectedStyle} uslubi va ${selectedColors} ranglari eng mos. Premium foydalanuvchilar Brand Kit bepul.`; else recDiv.innerHTML=translations[currentLang].ai_recommend_default; }
+        updatePreview();
+
+        let loadingInterval=null;
+        function showLoading(){ const overlay=document.getElementById('loadingOverlay'); if(!overlay) return; overlay.classList.remove('hidden'); let prog=0; const progressFill=document.getElementById('progressFill'); const progressPercent=document.getElementById('progressPercent'); if(loadingInterval) clearInterval(loadingInterval); loadingInterval=setInterval(()=>{ prog+=Math.random()*12; if(prog>=100){ prog=100; clearInterval(loadingInterval); loadingInterval=null; } if(progressFill) progressFill.style.width=prog+'%'; if(progressPercent) progressPercent.innerText=Math.floor(prog)+'%'; },300); return ()=>{ if(loadingInterval){ clearInterval(loadingInterval); loadingInterval=null; } overlay.classList.add('hidden'); }; }
+        document.getElementById('generateBtn')?.addEventListener('click',()=>{ const brand=document.getElementById('brandName').value.trim(); const customInd=document.getElementById('customIndustry').value.trim(); const customCol=document.getElementById('customColors').value.trim(); let finalIndustry=selectedIndustry||customInd; let finalColors=selectedColors||customCol; if(!brand){ tg.showPopup({title:"Xatolik", message:"Brend nomini kiriting", buttons:[{type:"ok"}]}); return; } if(!finalIndustry){ tg.showPopup({title:"Xatolik", message:"Sohani tanlang", buttons:[{type:"ok"}]}); return; } if(!selectedStyle){ tg.showPopup({title:"Xatolik", message:"Uslubni tanlang", buttons:[{type:"ok"}]}); return; } const hide=showLoading(); tg.sendData(JSON.stringify({ brand_name: brand, industry: finalIndustry, style: selectedStyle, colors: finalColors })); setTimeout(()=>{ if(hide) hide(); tg.close(); },4000); });
+
+        // Chat
+        const chatBox=document.getElementById('chatBox'), chatInput=document.getElementById('chatInput'), chatSend=document.getElementById('chatSend');
+        function addMessage(text,isUser=false){ if(!chatBox) return; const div=document.createElement('div'); div.className=`${isUser?'bg-blue-600/30 ml-auto':'bg-white/5'} rounded-2xl p-3 text-sm max-w-[85%] ${isUser?'rounded-br-none':'rounded-bl-none'} fade-in`; div.innerHTML=isUser?`🧑 ${text}`:`🤖 ${text}`; chatBox.appendChild(div); chatBox.scrollTop=chatBox.scrollHeight; }
+        async function sendChat(){ const msg=chatInput?.value.trim(); if(!msg) return; addMessage(msg,true); if(chatInput) chatInput.value=''; addMessage("Qabul qilindi! Iltimos, brend nomi va uslubni to'liq yozing yoki yuqoridagi Wizarddan foydalaning.",false); }
+        if(chatSend) chatSend.onclick=sendChat; if(chatInput) chatInput.addEventListener('keypress',(e)=>{ if(e.key==='Enter') sendChat(); });
+        document.querySelectorAll('.suggest-chip').forEach(btn=>{ btn.onclick=()=>{ if(chatInput){ chatInput.value=btn.getAttribute('data-msg'); sendChat(); } }; });
+        addMessage("Salom! Brendingiz haqida gapirib bering, men logotip yaratishda yordam beraman.",false);
+        const voiceBtn=document.getElementById('voiceBtn'); if(voiceBtn && 'webkitSpeechRecognition' in window){ const recognition=new webkitSpeechRecognition(); recognition.lang='uz-UZ'; recognition.onresult=(e)=>{ if(chatInput) chatInput.value=e.results[0][0].transcript; sendChat(); }; voiceBtn.onclick=()=>recognition.start(); } else if(voiceBtn) voiceBtn.style.display='none';
+
+        // Projects, Services, Profile
+        function loadProjects(){ const container=document.getElementById('projectsContainer'); if(container) container.innerHTML=`<div class="text-center text-sm opacity-60">Loyihalarni ko‘rish uchun botga /myprojects yuboring</div><button onclick="tg.sendData(JSON.stringify({action:'get_projects'}))" class="w-full bg-white/10 py-2 rounded-xl mt-2 active:scale-95 transition">📥 Yuklash</button>`; }
+        document.getElementById('refreshProjectsBtn')?.addEventListener('click',loadProjects); loadProjects();
+        document.querySelectorAll('.service-card').forEach(btn=>{ btn.onclick=()=>{ const svc=btn.getAttribute('data-svc'); tg.sendData(JSON.stringify({ action: "service", service: svc })); tg.showPopup({title:"Xizmat", message:`${svc.toUpperCase()} so‘raldi. Bot chatga javob yuboradi.`, buttons:[{type:"ok"}]}); }; });
+        document.getElementById('copyReferral')?.addEventListener('click',()=>{ const botUsername=tg.initDataUnsafe?.user?.username||"LogoAIStudioBot"; const link=`https://t.me/${botUsername}?start=ref_${Math.random().toString(36).substr(2,8)}`; navigator.clipboard.writeText(link); tg.showPopup({title:"Nusxalandi", message:"Referal havola saqlandi", buttons:[{type:"ok"}]}); });
+        document.getElementById('premiumButton')?.addEventListener('click',()=>tg.sendData(JSON.stringify({ action: "premium" })));
+        function loadProfile(){ document.getElementById('creditsCount').innerText="5"; document.getElementById('badgeList').innerHTML="🎉 Beginner"; document.getElementById('totalLogos').innerText="0"; document.getElementById('referralCount').innerText="0"; }
+        loadProfile();
+
+        let weeklyChart, styleChart;
+        function initCharts(){ const ctx1=document.getElementById('weeklyChart')?.getContext('2d'); const ctx2=document.getElementById('styleChart')?.getContext('2d'); if(ctx1) weeklyChart=new Chart(ctx1,{type:'bar',data:{labels:['Dush','Sesh','Chor','Pay','Jum','Shan','Yak'],datasets:[{label:'Logolar',data:[0,0,0,0,0,0,0],backgroundColor:'#3b82f6',borderRadius:8}]},options:{responsive:true,maintainAspectRatio:true}}); if(ctx2) styleChart=new Chart(ctx2,{type:'pie',data:{labels:['Minimalist','Corporate','Creative'],datasets:[{data:[5,3,2],backgroundColor:['#3b82f6','#a855f7','#22c55e']}]}}); }
+        initCharts();
+
+        const tabBtns=document.querySelectorAll('.tab-btn'), tabContents=document.querySelectorAll('.tab-content');
+        tabBtns.forEach(btn=>{ btn.addEventListener('click',()=>{ const tabId=btn.getAttribute('data-tab'); tabContents.forEach(tc=>{ tc.classList.add('hidden'); tc.classList.remove('fade-in'); }); const activeTab=document.getElementById(`tab-${tabId}`); if(activeTab){ activeTab.classList.remove('hidden'); setTimeout(()=>activeTab.classList.add('fade-in'),10); } tabBtns.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); if(tabId==='stats'){ if(weeklyChart) weeklyChart.update(); if(styleChart) styleChart.update(); } if(tabId==='profile') loadProfile(); }); });
+        tabBtns[0]?.classList.add('active'); document.getElementById('tab-wizard')?.classList.remove('hidden');
+        tg.enableClosingConfirmation();
+    </script>
+</body>
+</html>
